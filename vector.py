@@ -43,7 +43,7 @@ class Vector :
             return :
                 a new vector 
         """
-        sub_value = [x+y for x,y in zip(self.coordinates, v.coordinates)]
+        sub_value = [x-y for x,y in zip(self.coordinates, v.coordinates)]
 
         return Vector(sub_value)
 
@@ -82,7 +82,79 @@ class Vector :
         try:
             magnitude = self.magnitude()
 
-            return Vector([x/self.magnitude for x in self.coordinates])
+            return Vector([x/magnitude for x in self.coordinates])
 
         except ZeroDivisionError:
             raise Exception("Cannot normalize  the zero vector") 
+
+    def dot(self, v):
+
+        """ 
+            Adds the products of corresponding components and it gives a scalar
+
+            args : 
+                -v - Vector
+            return : 
+                float
+        """
+
+        return sum([x * y for x,y in zip(self.coordinates, v.coordinates)])
+
+    def angle(self, v, in_degree=False):
+        """ 
+            Find the angle between the two vectors
+
+            args : 
+                v - Vector 
+                in_degree - bool 
+            
+            return  : 
+                float 
+        """
+        u1 = self.normalized()
+        u2 = v.normalized()
+
+        k = u1.dot(u2)
+
+        angle_in_radians = math.acos(k)
+        if in_degree :
+            angle_in_degree = 180/math.pi * angle_in_radians
+            return angle_in_degree 
+        
+        return angle_in_radians
+
+    def is_orthogonal(self, v):
+        """
+            Check if two vector are orthogonal or not 
+
+            args : 
+                v - vector 
+            return :
+                bool 
+        """
+        u1 = self.dot(v)
+
+        return (u1 == 0 )
+
+    def is_parallel(self, v):
+        pass 
+
+    def orthogonal_to(self, v):
+        projection_vector = self.projection(v)
+
+        return self.subtract(projection_vector)
+
+    def projection(self, v):
+        """ 
+            The vector that v creates in the direction of w 
+
+            args : 
+                v - Vector
+            return 
+                Vector 
+        """
+        uv = v.normalized()
+
+        dot = self.dot(uv)
+       
+        return Vector([x*dot for x in uv.coordinates])
